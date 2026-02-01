@@ -177,6 +177,7 @@ export async function saveArticle(
     await put(`articles/${slug}.md`, frontmatter, {
       access: "public",
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
   } else {
     if (!fs.existsSync(articlesDirectory)) {
