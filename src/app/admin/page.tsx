@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 interface Article {
   slug: string;
@@ -22,9 +21,7 @@ export default function AdminPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const router = useRouter();
 
-  // Form state
   const [formTitle, setFormTitle] = useState("");
   const [formSlug, setFormSlug] = useState("");
   const [formExcerpt, setFormExcerpt] = useState("");
@@ -187,7 +184,7 @@ export default function AdminPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-warmgray">Loading...</div>
+        <div className="text-gray-500">Loading...</div>
       </div>
     );
   }
@@ -195,9 +192,9 @@ export default function AdminPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
-          <h1 className="text-2xl font-semibold text-charcoal dark:text-dark-text mb-6 text-center">
-            Admin Login
+        <div className="w-full max-w-sm">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-text mb-8 text-center">
+            Admin
           </h1>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
@@ -205,19 +202,19 @@ export default function AdminPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                className="w-full px-4 py-3 rounded-lg border border-cream-200 dark:border-charcoal-light bg-white dark:bg-dark-surface text-charcoal dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-amber-accent"
+                placeholder="Password"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
                 autoFocus
               />
             </div>
             {error && (
-              <p className="text-red-500 text-sm">{error}</p>
+              <p className="text-red-600 text-sm">{error}</p>
             )}
             <button
               type="submit"
-              className="w-full py-3 bg-amber-accent text-white rounded-lg hover:bg-amber-dark transition-colors font-medium"
+              className="w-full py-3 bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
             >
-              Login
+              Sign in
             </button>
           </form>
         </div>
@@ -227,55 +224,55 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-semibold text-charcoal dark:text-dark-text">
-          Admin Dashboard
+      <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200 dark:border-dark-border">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-text">
+          Dashboard
         </h1>
         <button
           onClick={handleLogout}
-          className="text-warmgray hover:text-charcoal dark:hover:text-dark-text transition-colors"
+          className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-dark-text transition-colors"
         >
-          Logout
+          Sign out
         </button>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-12">
         {/* Articles List */}
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-charcoal dark:text-dark-text">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-text">
               Articles
             </h2>
             <button
               onClick={startCreating}
-              className="px-4 py-2 bg-amber-accent text-white rounded-lg hover:bg-amber-dark transition-colors text-sm font-medium"
+              className="px-4 py-2 bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
             >
-              New Article
+              New article
             </button>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-1">
             {articles.length === 0 ? (
-              <p className="text-warmgray py-8 text-center">No articles yet</p>
+              <p className="text-gray-500 py-8 text-center">No articles yet</p>
             ) : (
               articles.map((article) => (
                 <div
                   key={article.slug}
-                  className={`p-4 rounded-lg border transition-colors cursor-pointer ${
+                  className={`p-4 border transition-colors cursor-pointer ${
                     editingArticle?.slug === article.slug
-                      ? "border-amber-accent bg-amber-accent/5"
-                      : "border-cream-200 dark:border-charcoal-light hover:border-amber-accent/50"
+                      ? "border-gray-900 dark:border-dark-text bg-gray-50 dark:bg-dark-surface"
+                      : "border-gray-200 dark:border-dark-border hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                   onClick={() => startEditing(article)}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-charcoal dark:text-dark-text truncate">
+                      <h3 className="font-medium text-gray-900 dark:text-dark-text truncate">
                         {article.title}
                       </h3>
-                      <p className="text-sm text-warmgray mt-1">
-                        {article.date} • {article.readingTime} min read
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        {article.date}
                         {!article.published && (
-                          <span className="ml-2 text-amber-dark">(Draft)</span>
+                          <span className="ml-2 text-amber-600">(Draft)</span>
                         )}
                       </p>
                     </div>
@@ -284,7 +281,7 @@ export default function AdminPage() {
                         e.stopPropagation();
                         handleDelete(article.slug);
                       }}
-                      className="text-warmgray hover:text-red-500 transition-colors p-1"
+                      className="text-gray-400 hover:text-red-600 transition-colors p-1"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -292,11 +289,11 @@ export default function AdminPage() {
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
+                        strokeWidth={1.5}
                       >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          strokeWidth={2}
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                         />
                       </svg>
@@ -311,26 +308,26 @@ export default function AdminPage() {
         {/* Editor */}
         <div>
           {(isCreating || editingArticle) && (
-            <form onSubmit={handleSave} className="space-y-4">
+            <form onSubmit={handleSave} className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium text-charcoal dark:text-dark-text">
-                  {editingArticle ? "Edit Article" : "New Article"}
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-text">
+                  {editingArticle ? "Edit article" : "New article"}
                 </h2>
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="text-warmgray hover:text-charcoal dark:hover:text-dark-text transition-colors text-sm"
+                  className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-dark-text transition-colors"
                 >
                   Cancel
                 </button>
               </div>
 
               {error && (
-                <p className="text-red-500 text-sm">{error}</p>
+                <p className="text-red-600 text-sm">{error}</p>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-warmgray-dark dark:text-warmgray-light mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Title
                 </label>
                 <input
@@ -342,80 +339,49 @@ export default function AdminPage() {
                       setFormSlug(generateSlug(e.target.value));
                     }
                   }}
-                  className="w-full px-4 py-2 rounded-lg border border-cream-200 dark:border-charcoal-light bg-white dark:bg-dark-surface text-charcoal dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-amber-accent"
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-warmgray-dark dark:text-warmgray-light mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Slug
                 </label>
                 <input
                   type="text"
                   value={formSlug}
                   onChange={(e) => setFormSlug(generateSlug(e.target.value))}
-                  className="w-full px-4 py-2 rounded-lg border border-cream-200 dark:border-charcoal-light bg-white dark:bg-dark-surface text-charcoal dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-amber-accent font-mono text-sm"
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-warmgray-dark dark:text-warmgray-light mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Excerpt
                 </label>
                 <textarea
                   value={formExcerpt}
                   onChange={(e) => setFormExcerpt(e.target.value)}
                   rows={2}
-                  className="w-full px-4 py-2 rounded-lg border border-cream-200 dark:border-charcoal-light bg-white dark:bg-dark-surface text-charcoal dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-amber-accent resize-none"
-                  placeholder="Brief description of the article..."
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text resize-none"
+                  placeholder="Brief description..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-warmgray-dark dark:text-warmgray-light mb-1">
-                  Featured Image URL (optional)
-                </label>
-                <input
-                  type="text"
-                  value={formImage}
-                  onChange={(e) => setFormImage(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-cream-200 dark:border-charcoal-light bg-white dark:bg-dark-surface text-charcoal dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-amber-accent"
-                  placeholder="/images/my-image.jpg"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-warmgray-dark dark:text-warmgray-light mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Content (Markdown)
                 </label>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <textarea
-                    value={formContent}
-                    onChange={(e) => setFormContent(e.target.value)}
-                    rows={16}
-                    className="w-full px-4 py-3 rounded-lg border border-cream-200 dark:border-charcoal-light bg-white dark:bg-dark-surface text-charcoal dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-amber-accent font-mono text-sm resize-none"
-                    placeholder="Write your article in Markdown..."
-                    required
-                  />
-                  <div className="hidden md:block p-4 rounded-lg border border-cream-200 dark:border-charcoal-light bg-cream-50 dark:bg-dark-surface overflow-auto max-h-96">
-                    <p className="text-xs text-warmgray mb-2">Preview</p>
-                    <div
-                      className="article-content text-sm"
-                      dangerouslySetInnerHTML={{
-                        __html: formContent
-                          .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                          .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                          .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                          .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                          .replace(/`(.*?)`/g, '<code>$1</code>')
-                          .replace(/\n/g, '<br>'),
-                      }}
-                    />
-                  </div>
-                </div>
+                <textarea
+                  value={formContent}
+                  onChange={(e) => setFormContent(e.target.value)}
+                  rows={20}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text resize-none"
+                  placeholder="Write your article..."
+                  required
+                />
               </div>
 
               <div className="flex items-center gap-2">
@@ -424,11 +390,11 @@ export default function AdminPage() {
                   id="published"
                   checked={formPublished}
                   onChange={(e) => setFormPublished(e.target.checked)}
-                  className="rounded border-cream-200 dark:border-charcoal-light text-amber-accent focus:ring-amber-accent"
+                  className="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900"
                 />
                 <label
                   htmlFor="published"
-                  className="text-sm text-warmgray-dark dark:text-warmgray-light"
+                  className="text-sm text-gray-700 dark:text-gray-300"
                 >
                   Published
                 </label>
@@ -437,15 +403,15 @@ export default function AdminPage() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="w-full py-3 bg-amber-accent text-white rounded-lg hover:bg-amber-dark transition-colors font-medium disabled:opacity-50"
+                className="w-full py-3 bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
-                {isSaving ? "Saving..." : editingArticle ? "Update Article" : "Create Article"}
+                {isSaving ? "Saving..." : editingArticle ? "Update" : "Publish"}
               </button>
             </form>
           )}
 
           {!isCreating && !editingArticle && (
-            <div className="flex items-center justify-center h-64 text-warmgray">
+            <div className="flex items-center justify-center h-64 text-gray-400">
               Select an article to edit or create a new one
             </div>
           )}
