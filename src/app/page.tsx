@@ -1,8 +1,10 @@
-import { getAllArticles } from "@/lib/articles";
+import { getAllArticlesAsync } from "@/lib/articles";
 import ArticleCard from "@/components/ArticleCard";
 
-export default function HomePage() {
-  const articles = getAllArticles();
+export const revalidate = 60; // Revalidate every 60 seconds
+
+export default async function HomePage() {
+  const articles = await getAllArticlesAsync();
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
