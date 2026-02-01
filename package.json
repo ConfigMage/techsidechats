@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.18",
+    "@vercel/blob": "^2.0.1",
     "gray-matter": "^4.0.3",
     "next": "^16.1.6",
     "react": "^19.2.4",

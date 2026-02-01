@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { isAuthenticated } from "@/lib/auth";
-import { getArticleBySlug, getAllArticles, getArticleSlugs } from "@/lib/articles";
-
-const articlesDirectory = path.join(process.cwd(), "content/articles");
-
-function ensureDirectoryExists() {
-  if (!fs.existsSync(articlesDirectory)) {
-    fs.mkdirSync(articlesDirectory, { recursive: true });
-  }
-}
+import {
+  getArticleSlugsAsync,
+  getArticleBySlugAsync,
+  saveArticle,
+  deleteArticle,
+  articleExists,
+} from "@/lib/articles";
 
 export async function GET() {
   const authenticated = await isAuthenticated();
@@ -18,14 +14,23 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Return all articles including unpublished ones for admin
-  const slugs = getArticleSlugs();
-  const articles = slugs
-    .map((slug) => getArticleBySlug(slug))
-    .filter((article) => article !== null)
-    .sort((a, b) => new Date(b!.date).getTime() - new Date(a!.date).getTime());
+  try {
+    const slugs = await getArticleSlugsAsync();
+    const articles = [];
 
-  return NextResponse.json(articles);
+    for (const slug of slugs) {
+      const article = await getArticleBySlugAsync(slug);
+      if (article) {
+        articles.push(article);
+      }
+    }
+
+    articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return NextResponse.json(articles);
+  } catch (error) {
+    console.error("Error fetching articles:", error);
+    return NextResponse.json({ error: "Failed to fetch articles" }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -53,12 +58,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    ensureDirectoryExists();
-
-    const filePath = path.join(articlesDirectory, `${slug}.md`);
-
-    // Check if file already exists
-    if (fs.existsSync(filePath)) {
+    // Check if article already exists
+    const exists = await articleExists(slug);
+    if (exists) {
       return NextResponse.json(
         { error: "An article with this slug already exists" },
         { status: 409 }
@@ -67,24 +69,18 @@ export async function POST(request: NextRequest) {
 
     const date = new Date().toISOString().split("T")[0];
 
-    const frontmatter = [
-      "---",
-      `title: "${title.replace(/"/g, '\\"')}"`,
-      `date: "${date}"`,
-      `excerpt: "${(excerpt || "").replace(/"/g, '\\"')}"`,
-      image ? `image: "${image}"` : null,
-      `published: ${published !== false}`,
-      "---",
-      "",
+    await saveArticle(slug, {
+      title,
+      date,
+      excerpt: excerpt || "",
+      image: image || undefined,
+      published: published !== false,
       content,
-    ]
-      .filter((line) => line !== null)
-      .join("\n");
-
-    fs.writeFileSync(filePath, frontmatter, "utf8");
+    });
 
     return NextResponse.json({ success: true, slug });
-  } catch {
+  } catch (error) {
+    console.error("Error creating article:", error);
     return NextResponse.json(
       { error: "Failed to create article" },
       { status: 500 }
@@ -109,12 +105,9 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    ensureDirectoryExists();
-
-    const originalFilePath = path.join(articlesDirectory, `${originalSlug}.md`);
-    const newFilePath = path.join(articlesDirectory, `${slug}.md`);
-
-    if (!fs.existsSync(originalFilePath)) {
+    // Check if original article exists
+    const originalExists = await articleExists(originalSlug);
+    if (!originalExists) {
       return NextResponse.json(
         { error: "Original article not found" },
         { status: 404 }
@@ -122,38 +115,32 @@ export async function PUT(request: NextRequest) {
     }
 
     // If slug changed, check new slug doesn't exist
-    if (originalSlug !== slug && fs.existsSync(newFilePath)) {
-      return NextResponse.json(
-        { error: "An article with this slug already exists" },
-        { status: 409 }
-      );
+    if (originalSlug !== slug) {
+      const newExists = await articleExists(slug);
+      if (newExists) {
+        return NextResponse.json(
+          { error: "An article with this slug already exists" },
+          { status: 409 }
+        );
+      }
+      // Delete the old article
+      await deleteArticle(originalSlug);
     }
 
     const articleDate = date || new Date().toISOString().split("T")[0];
 
-    const frontmatter = [
-      "---",
-      `title: "${title.replace(/"/g, '\\"')}"`,
-      `date: "${articleDate}"`,
-      `excerpt: "${(excerpt || "").replace(/"/g, '\\"')}"`,
-      image ? `image: "${image}"` : null,
-      `published: ${published !== false}`,
-      "---",
-      "",
+    await saveArticle(slug, {
+      title,
+      date: articleDate,
+      excerpt: excerpt || "",
+      image: image || undefined,
+      published: published !== false,
       content,
-    ]
-      .filter((line) => line !== null)
-      .join("\n");
-
-    // Delete original file if slug changed
-    if (originalSlug !== slug) {
-      fs.unlinkSync(originalFilePath);
-    }
-
-    fs.writeFileSync(newFilePath, frontmatter, "utf8");
+    });
 
     return NextResponse.json({ success: true, slug });
-  } catch {
+  } catch (error) {
+    console.error("Error updating article:", error);
     return NextResponse.json(
       { error: "Failed to update article" },
       { status: 500 }
@@ -177,19 +164,18 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const filePath = path.join(articlesDirectory, `${slug}.md`);
-
-    if (!fs.existsSync(filePath)) {
+    const exists = await articleExists(slug);
+    if (!exists) {
       return NextResponse.json(
         { error: "Article not found" },
         { status: 404 }
       );
     }
 
-    fs.unlinkSync(filePath);
-
+    await deleteArticle(slug);
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    console.error("Error deleting article:", error);
     return NextResponse.json(
       { error: "Failed to delete article" },
       { status: 500 }

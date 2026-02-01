@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface Article {
   slug: string;
@@ -30,9 +30,49 @@ export default function AdminPage() {
   const [formPublished, setFormPublished] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Preview state
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState("");
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+
   useEffect(() => {
     checkAuth();
   }, []);
+
+  // Debounced preview generation
+  const generatePreview = useCallback(async (content: string) => {
+    if (!content.trim()) {
+      setPreviewHtml("");
+      return;
+    }
+
+    setIsLoadingPreview(true);
+    try {
+      const res = await fetch("/api/admin/preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPreviewHtml(data.html);
+      }
+    } catch {
+      // Silently fail preview
+    }
+    setIsLoadingPreview(false);
+  }, []);
+
+  // Update preview when content changes and preview is visible
+  useEffect(() => {
+    if (showPreview) {
+      const timer = setTimeout(() => {
+        generatePreview(formContent);
+      }, 300); // Debounce 300ms
+      return () => clearTimeout(timer);
+    }
+  }, [formContent, showPreview, generatePreview]);
 
   const checkAuth = async () => {
     try {
@@ -96,6 +136,8 @@ export default function AdminPage() {
     setFormPublished(true);
     setEditingArticle(null);
     setIsCreating(false);
+    setShowPreview(false);
+    setPreviewHtml("");
   };
 
   const startCreating = () => {
@@ -112,6 +154,8 @@ export default function AdminPage() {
     setFormPublished(article.published);
     setEditingArticle(article);
     setIsCreating(false);
+    setShowPreview(false);
+    setPreviewHtml("");
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -203,6 +247,7 @@ export default function AdminPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
+                autoComplete="current-password"
                 className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
                 autoFocus
               />
@@ -223,7 +268,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200 dark:border-dark-border">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-text">
           Dashboard
@@ -236,9 +281,9 @@ export default function AdminPage() {
         </button>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-12">
+      <div className="grid lg:grid-cols-5 gap-8">
         {/* Articles List */}
-        <div>
+        <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-text">
               Articles
@@ -306,7 +351,7 @@ export default function AdminPage() {
         </div>
 
         {/* Editor */}
-        <div>
+        <div className="lg:col-span-3">
           {(isCreating || editingArticle) && (
             <form onSubmit={handleSave} className="space-y-6">
               <div className="flex items-center justify-between">
@@ -326,35 +371,37 @@ export default function AdminPage() {
                 <p className="text-red-600 text-sm">{error}</p>
               )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  value={formTitle}
-                  onChange={(e) => {
-                    setFormTitle(e.target.value);
-                    if (!editingArticle) {
-                      setFormSlug(generateSlug(e.target.value));
-                    }
-                  }}
-                  className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
-                  required
-                />
-              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    value={formTitle}
+                    onChange={(e) => {
+                      setFormTitle(e.target.value);
+                      if (!editingArticle) {
+                        setFormSlug(generateSlug(e.target.value));
+                      }
+                    }}
+                    className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
+                    required
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Slug
-                </label>
-                <input
-                  type="text"
-                  value={formSlug}
-                  onChange={(e) => setFormSlug(generateSlug(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
-                  required
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Slug
+                  </label>
+                  <input
+                    type="text"
+                    value={formSlug}
+                    onChange={(e) => setFormSlug(generateSlug(e.target.value))}
+                    className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
@@ -366,47 +413,128 @@ export default function AdminPage() {
                   onChange={(e) => setFormExcerpt(e.target.value)}
                   rows={2}
                   className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text resize-none"
-                  placeholder="Brief description..."
+                  placeholder="Brief description shown on the home page..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Content (Markdown)
-                </label>
-                <textarea
-                  value={formContent}
-                  onChange={(e) => setFormContent(e.target.value)}
-                  rows={20}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text resize-none"
-                  placeholder="Write your article..."
-                  required
-                />
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Content (Markdown)
+                  </label>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowPreview(false)}
+                      className={`px-3 py-1 text-sm transition-colors ${
+                        !showPreview
+                          ? "bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg"
+                          : "bg-gray-100 dark:bg-dark-surface text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-border"
+                      }`}
+                    >
+                      Write
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowPreview(true);
+                        generatePreview(formContent);
+                      }}
+                      className={`px-3 py-1 text-sm transition-colors ${
+                        showPreview
+                          ? "bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg"
+                          : "bg-gray-100 dark:bg-dark-surface text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-border"
+                      }`}
+                    >
+                      Preview
+                    </button>
+                  </div>
+                </div>
+
+                {!showPreview ? (
+                  <textarea
+                    value={formContent}
+                    onChange={(e) => setFormContent(e.target.value)}
+                    rows={24}
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text resize-none"
+                    placeholder="Write your article in Markdown...
+
+# Heading 1
+## Heading 2
+### Heading 3
+
+**Bold text** and *italic text*
+
+- Bullet point
+- Another point
+
+1. Numbered list
+2. Second item
+
+> Blockquote
+
+`inline code`
+
+[Link text](https://example.com)"
+                    required
+                  />
+                ) : (
+                  <div className="w-full min-h-[500px] px-6 py-4 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface overflow-auto">
+                    {isLoadingPreview ? (
+                      <div className="flex items-center justify-center h-32 text-gray-400">
+                        Loading preview...
+                      </div>
+                    ) : previewHtml ? (
+                      <div className="max-w-2xl mx-auto">
+                        <div className="mb-8 pb-6 border-b border-gray-200 dark:border-dark-border">
+                          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-dark-text mb-3">
+                            {formTitle || "Untitled"}
+                          </h1>
+                          <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400 text-sm">
+                            <span className="font-medium text-gray-900 dark:text-dark-text">ConfigMage</span>
+                            <span>·</span>
+                            <span>{new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</span>
+                          </div>
+                        </div>
+                        <div
+                          className="article-content"
+                          dangerouslySetInnerHTML={{ __html: previewHtml }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-32 text-gray-400">
+                        Start writing to see preview
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="published"
-                  checked={formPublished}
-                  onChange={(e) => setFormPublished(e.target.checked)}
-                  className="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900"
-                />
-                <label
-                  htmlFor="published"
-                  className="text-sm text-gray-700 dark:text-gray-300"
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="published"
+                    checked={formPublished}
+                    onChange={(e) => setFormPublished(e.target.checked)}
+                    className="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900"
+                  />
+                  <label
+                    htmlFor="published"
+                    className="text-sm text-gray-700 dark:text-gray-300"
+                  >
+                    Published
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="px-6 py-2 bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
                 >
-                  Published
-                </label>
+                  {isSaving ? "Saving..." : editingArticle ? "Update" : "Publish"}
+                </button>
               </div>
-
-              <button
-                type="submit"
-                disabled={isSaving}
-                className="w-full py-3 bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
-              >
-                {isSaving ? "Saving..." : editingArticle ? "Update" : "Publish"}
-              </button>
             </form>
           )}
 
