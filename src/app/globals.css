@@ -1,29 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  /* Clean, professional palette */
+  /* Warm sepia palette */
   --color-white: #FFFFFF;
-  --color-gray-50: #FAFAFA;
-  --color-gray-100: #F5F5F5;
-  --color-gray-200: #E5E5E5;
-  --color-gray-300: #D4D4D4;
-  --color-gray-400: #A3A3A3;
-  --color-gray-500: #737373;
-  --color-gray-600: #525252;
-  --color-gray-700: #404040;
-  --color-gray-800: #262626;
-  --color-gray-900: #171717;
+  --color-sepia-bg: #FBF7F0;
+  --color-sepia-surface: #F5EFE6;
+  --color-gray-50: #FAF8F5;
+  --color-gray-100: #F5F0E8;
+  --color-gray-200: #E8E0D5;
+  --color-gray-300: #D4C9BA;
+  --color-gray-400: #A39685;
+  --color-gray-500: #736859;
+  --color-gray-600: #524840;
+  --color-gray-700: #403830;
+  --color-gray-800: #2E2620;
+  --color-gray-900: #1A1510;
 
-  /* Accent - subtle orange like Substack */
-  --color-accent: #FF6719;
-  --color-accent-hover: #E55A14;
-
-  /* Dark mode */
-  --color-dark-bg: #0F0F0F;
-  --color-dark-surface: #1A1A1A;
-  --color-dark-border: #2A2A2A;
-  --color-dark-text: #FAFAFA;
-  --color-dark-text-secondary: #A3A3A3;
+  /* Accent - warm orange */
+  --color-accent: #D4652A;
+  --color-accent-hover: #B8561F;
 
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
@@ -35,15 +30,10 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-white);
+  background-color: var(--color-sepia-bg);
   color: var(--color-gray-900);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.dark body {
-  background-color: var(--color-dark-bg);
-  color: var(--color-dark-text);
 }
 
 /* Article content styling - editorial feel */
@@ -52,10 +42,6 @@ body {
   font-size: 1.25rem;
   line-height: 1.75;
   color: var(--color-gray-800);
-}
-
-.dark .article-content {
-  color: var(--color-dark-text);
 }
 
 .article-content h1,
@@ -68,13 +54,6 @@ body {
   margin-top: 2.5em;
   margin-bottom: 0.75em;
   color: var(--color-gray-900);
-}
-
-.dark .article-content h1,
-.dark .article-content h2,
-.dark .article-content h3,
-.dark .article-content h4 {
-  color: var(--color-dark-text);
 }
 
 .article-content h1 {
@@ -106,15 +85,6 @@ body {
   text-decoration-color: var(--color-accent);
 }
 
-.dark .article-content a {
-  color: var(--color-dark-text);
-  text-decoration-color: var(--color-gray-600);
-}
-
-.dark .article-content a:hover {
-  text-decoration-color: var(--color-accent);
-}
-
 .article-content ul,
 .article-content ol {
   margin-bottom: 1.75em;
@@ -138,21 +108,12 @@ body {
   color: var(--color-gray-700);
 }
 
-.dark .article-content blockquote {
-  border-left-color: var(--color-dark-text);
-  color: var(--color-dark-text-secondary);
-}
-
 .article-content code {
   background-color: var(--color-gray-100);
   padding: 0.2em 0.4em;
   border-radius: 4px;
   font-size: 0.875em;
   font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
-}
-
-.dark .article-content code {
-  background-color: var(--color-dark-surface);
 }
 
 .article-content pre {
@@ -182,10 +143,6 @@ body {
   border: none;
   border-top: 1px solid var(--color-gray-200);
   margin: 3em 0;
-}
-
-.dark .article-content hr {
-  border-top-color: var(--color-dark-border);
 }
 
 /* Reading progress bar */

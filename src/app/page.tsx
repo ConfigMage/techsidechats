@@ -8,11 +8,11 @@ export default async function HomePage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-      <header className="mb-12 pb-8 border-b border-gray-200 dark:border-dark-border">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 dark:text-dark-text mb-4">
+      <header className="mb-12 pb-8 border-b border-gray-200">
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">
           Techside Chats
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
+        <p className="text-xl text-gray-600 leading-relaxed">
           Making sense of technology, one article at a time. Written for everyone
           who wants to stay informed without the jargon.
         </p>
@@ -20,7 +20,7 @@ export default async function HomePage() {
 
       {articles.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-gray-500 dark:text-gray-400 text-lg">
+          <p className="text-gray-500 text-lg">
             No articles yet. Check back soon.
           </p>
         </div>

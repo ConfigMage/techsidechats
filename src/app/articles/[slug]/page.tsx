@@ -46,7 +46,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <header className="mb-10">
           <Link
             href="/"
-            className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-dark-text transition-colors mb-8"
+            className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 transition-colors mb-8"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -65,12 +65,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             Back
           </Link>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-gray-900 dark:text-dark-text mb-6 leading-[1.15]">
+          <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-gray-900 mb-6 leading-[1.15]">
             {article.title}
           </h1>
 
-          <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
-            <span className="font-medium text-gray-900 dark:text-dark-text">ConfigMage</span>
+          <div className="flex items-center gap-3 text-gray-500">
+            <span className="font-medium text-gray-900">ConfigMage</span>
             <span>·</span>
             <time dateTime={article.date}>{formatDate(article.date)}</time>
             <span>·</span>
@@ -80,10 +80,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
         <ArticleContent html={contentHtml} />
 
-        <footer className="mt-16 pt-8 border-t border-gray-200 dark:border-dark-border">
+        <footer className="mt-16 pt-8 border-t border-gray-200">
           <Link
             href="/"
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-dark-text transition-colors"
+            className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

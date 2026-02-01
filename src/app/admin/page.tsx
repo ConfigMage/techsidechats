@@ -237,7 +237,7 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-text mb-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-8 text-center">
             Admin
           </h1>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -248,7 +248,7 @@ export default function AdminPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 autoComplete="current-password"
-                className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
+                className="w-full px-4 py-3 border border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
                 autoFocus
               />
             </div>
@@ -257,7 +257,7 @@ export default function AdminPage() {
             )}
             <button
               type="submit"
-              className="w-full py-3 bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+              className="w-full py-3 bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors"
             >
               Sign in
             </button>
@@ -269,13 +269,13 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200 dark:border-dark-border">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-text">
+      <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
+        <h1 className="text-2xl font-bold text-gray-900">
           Dashboard
         </h1>
         <button
           onClick={handleLogout}
-          className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-dark-text transition-colors"
+          className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
         >
           Sign out
         </button>
@@ -285,12 +285,12 @@ export default function AdminPage() {
         {/* Articles List */}
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-text">
+            <h2 className="text-lg font-semibold text-gray-900">
               Articles
             </h2>
             <button
               onClick={startCreating}
-              className="px-4 py-2 bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               New article
             </button>
@@ -304,17 +304,17 @@ export default function AdminPage() {
                   key={article.slug}
                   className={`p-4 border transition-colors cursor-pointer ${
                     editingArticle?.slug === article.slug
-                      ? "border-gray-900 dark:border-dark-text bg-gray-50 dark:bg-dark-surface"
-                      : "border-gray-200 dark:border-dark-border hover:border-gray-300 dark:hover:border-gray-600"
+                      ? "border-gray-900 bg-gray-50"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                   onClick={() => startEditing(article)}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-gray-900 dark:text-dark-text truncate">
+                      <h3 className="font-medium text-gray-900 truncate">
                         {article.title}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-sm text-gray-500 mt-1">
                         {article.date}
                         {!article.published && (
                           <span className="ml-2 text-amber-600">(Draft)</span>
@@ -355,13 +355,13 @@ export default function AdminPage() {
           {(isCreating || editingArticle) && (
             <form onSubmit={handleSave} className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-text">
+                <h2 className="text-lg font-semibold text-gray-900">
                   {editingArticle ? "Edit article" : "New article"}
                 </h2>
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-dark-text transition-colors"
+                  className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
                 >
                   Cancel
                 </button>
@@ -373,7 +373,7 @@ export default function AdminPage() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Title
                   </label>
                   <input
@@ -385,41 +385,41 @@ export default function AdminPage() {
                         setFormSlug(generateSlug(e.target.value));
                       }
                     }}
-                    className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
+                    className="w-full px-4 py-2 border border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Slug
                   </label>
                   <input
                     type="text"
                     value={formSlug}
                     onChange={(e) => setFormSlug(generateSlug(e.target.value))}
-                    className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text"
+                    className="w-full px-4 py-2 border border-gray-200 bg-white text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Excerpt
                 </label>
                 <textarea
                   value={formExcerpt}
                   onChange={(e) => setFormExcerpt(e.target.value)}
                   rows={2}
-                  className="w-full px-4 py-2 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text resize-none"
+                  className="w-full px-4 py-2 border border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
                   placeholder="Brief description shown on the home page..."
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label className="block text-sm font-medium text-gray-700">
                     Content (Markdown)
                   </label>
                   <div className="flex gap-1">
@@ -428,8 +428,8 @@ export default function AdminPage() {
                       onClick={() => setShowPreview(false)}
                       className={`px-3 py-1 text-sm transition-colors ${
                         !showPreview
-                          ? "bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg"
-                          : "bg-gray-100 dark:bg-dark-surface text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-border"
+                          ? "bg-gray-900 text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
                       Write
@@ -442,8 +442,8 @@ export default function AdminPage() {
                       }}
                       className={`px-3 py-1 text-sm transition-colors ${
                         showPreview
-                          ? "bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg"
-                          : "bg-gray-100 dark:bg-dark-surface text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-dark-border"
+                          ? "bg-gray-900 text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
                       Preview
@@ -456,7 +456,7 @@ export default function AdminPage() {
                     value={formContent}
                     onChange={(e) => setFormContent(e.target.value)}
                     rows={24}
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-dark-text resize-none"
+                    className="w-full px-4 py-3 border border-gray-200 bg-white text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
                     placeholder="Write your article in Markdown...
 
 # Heading 1
@@ -479,19 +479,19 @@ export default function AdminPage() {
                     required
                   />
                 ) : (
-                  <div className="w-full min-h-[500px] px-6 py-4 border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface overflow-auto">
+                  <div className="w-full min-h-[500px] px-6 py-4 border border-gray-200 bg-white overflow-auto">
                     {isLoadingPreview ? (
                       <div className="flex items-center justify-center h-32 text-gray-400">
                         Loading preview...
                       </div>
                     ) : previewHtml ? (
                       <div className="max-w-2xl mx-auto">
-                        <div className="mb-8 pb-6 border-b border-gray-200 dark:border-dark-border">
-                          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-dark-text mb-3">
+                        <div className="mb-8 pb-6 border-b border-gray-200">
+                          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-3">
                             {formTitle || "Untitled"}
                           </h1>
-                          <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400 text-sm">
-                            <span className="font-medium text-gray-900 dark:text-dark-text">ConfigMage</span>
+                          <div className="flex items-center gap-3 text-gray-500 text-sm">
+                            <span className="font-medium text-gray-900">ConfigMage</span>
                             <span>·</span>
                             <span>{new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</span>
                           </div>
@@ -521,7 +521,7 @@ export default function AdminPage() {
                   />
                   <label
                     htmlFor="published"
-                    className="text-sm text-gray-700 dark:text-gray-300"
+                    className="text-sm text-gray-700"
                   >
                     Published
                   </label>
@@ -530,7 +530,7 @@ export default function AdminPage() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-6 py-2 bg-gray-900 dark:bg-dark-text text-white dark:text-dark-bg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
+                  className="px-6 py-2 bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
                 >
                   {isSaving ? "Saving..." : editingArticle ? "Update" : "Publish"}
                 </button>
