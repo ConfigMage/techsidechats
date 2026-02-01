@@ -20,7 +20,7 @@ export async function GET() {
 
     for (const slug of slugs) {
       const article = await getArticleBySlugAsync(slug);
-      if (article) {
+      if (article && !article.deleted) {
         articles.push(article);
       }
     }

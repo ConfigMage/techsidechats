@@ -15,6 +15,7 @@ export interface Article {
   excerpt: string;
   image?: string;
   published: boolean;
+  deleted?: boolean;
   content: string;
   readingTime: number;
 }
@@ -26,6 +27,7 @@ export interface ArticleMeta {
   excerpt: string;
   image?: string;
   published: boolean;
+  deleted?: boolean;
   readingTime: number;
 }
 
@@ -44,6 +46,7 @@ function parseArticleContent(slug: string, fileContents: string): Article {
     excerpt: data.excerpt || "",
     image: data.image || null,
     published: data.published !== false,
+    deleted: data.deleted === true,
     content,
     readingTime: calculateReadingTime(content),
   };
@@ -139,7 +142,7 @@ export async function getAllArticlesAsync(): Promise<ArticleMeta[]> {
 
   for (const slug of slugs) {
     const article = await getArticleBySlugAsync(slug);
-    if (article && article.published) {
+    if (article && article.published && !article.deleted) {
       const { content, ...meta } = article;
       articles.push(meta);
     }
@@ -198,8 +201,8 @@ export async function deleteArticle(slug: string): Promise<void> {
     // so we "hide" local articles by saving an unpublished version to Blob
     const localExists = fs.existsSync(path.join(articlesDirectory, `${slug}.md`));
     if (localExists && blobs.length === 0) {
-      // Save an unpublished marker to Blob to hide the local article
-      await put(`articles/${slug}.md`, `---\ntitle: "Deleted"\ndate: "${new Date().toISOString().split("T")[0]}"\nexcerpt: ""\npublished: false\n---\n`, {
+      // Save a deleted marker to Blob to hide the local article
+      await put(`articles/${slug}.md`, `---\ntitle: "Deleted"\ndate: "${new Date().toISOString().split("T")[0]}"\nexcerpt: ""\npublished: false\ndeleted: true\n---\n`, {
         access: "public",
         addRandomSuffix: false,
         allowOverwrite: true,

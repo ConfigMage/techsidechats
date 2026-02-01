@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getArticleBySlug, getArticleHtml, getArticleSlugs, formatDate } from "@/lib/articles";
+import { getArticleBySlugAsync, getArticleHtml, getArticleSlugs, formatDate } from "@/lib/articles";
 import ReadingProgress from "@/components/ReadingProgress";
 import ArticleContent from "@/components/ArticleContent";
+
+export const revalidate = 60; // Revalidate every 60 seconds
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -15,7 +17,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleBySlugAsync(slug);
 
   if (!article) {
     return { title: "Article Not Found" };
@@ -29,7 +31,7 @@ export async function generateMetadata({ params }: ArticlePageProps) {
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleBySlugAsync(slug);
 
   if (!article || !article.published) {
     notFound();
