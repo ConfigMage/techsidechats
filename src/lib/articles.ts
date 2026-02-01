@@ -189,9 +189,21 @@ export async function saveArticle(
 
 export async function deleteArticle(slug: string): Promise<void> {
   if (isVercel) {
+    // Delete from Vercel Blob if it exists there
     const { blobs } = await list({ prefix: `articles/${slug}.md` });
     if (blobs.length > 0) {
       await del(blobs[0].url);
+    }
+    // Note: Cannot delete from local filesystem on Vercel (read-only),
+    // so we "hide" local articles by saving an unpublished version to Blob
+    const localExists = fs.existsSync(path.join(articlesDirectory, `${slug}.md`));
+    if (localExists && blobs.length === 0) {
+      // Save an unpublished marker to Blob to hide the local article
+      await put(`articles/${slug}.md`, `---\ntitle: "Deleted"\ndate: "${new Date().toISOString().split("T")[0]}"\nexcerpt: ""\npublished: false\n---\n`, {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+      });
     }
   } else {
     const filePath = path.join(articlesDirectory, `${slug}.md`);
@@ -203,8 +215,10 @@ export async function deleteArticle(slug: string): Promise<void> {
 
 export async function articleExists(slug: string): Promise<boolean> {
   if (isVercel) {
+    // Check both Blob and local filesystem
     const { blobs } = await list({ prefix: `articles/${slug}.md` });
-    return blobs.length > 0;
+    if (blobs.length > 0) return true;
+    return fs.existsSync(path.join(articlesDirectory, `${slug}.md`));
   }
   return fs.existsSync(path.join(articlesDirectory, `${slug}.md`));
 }
